@@ -2,25 +2,19 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from io import StringIO
 import numpy as np
 
 # --- League Information ---
 @st.cache_data
 def load_league_info():
-    league_dates_data_str = """Challenge League,Release Date,End Date,Total Weeks
-Necropolis league,2024-03-29 6:00:00 PM,2024-07-23 10:00:00 PM,16.5714
-Affliction league,2023-12-08 7:00:00 PM,2024-03-26 9:00:00 PM,15.5714
-Ancestor league,2023-08-18 8:00:00 PM,2023-12-05 9:00:00 PM,15.5714
-Crucible league,2023-04-07 8:00:00 PM,2023-08-15 10:00:00 PM,18.5714"""
-    df = pd.read_csv(StringIO(league_dates_data_str))
+    df = pd.read_csv('LeagueData.csv')
     df['Release Date'] = pd.to_datetime(df['Release Date'])
     df['End Date'] = pd.to_datetime(df['End Date'])
     df['league'] = df['Challenge League'].str.replace(' league', '', regex=False)
     df.set_index('league', inplace=True)
     return df
 
-
+# --- Currency Information ---
 @st.cache_data
 def load_data():
     league_files = {
@@ -28,6 +22,13 @@ def load_data():
         "Crucible": "Crucible.currency.csv",
         "Affliction": "Affliction.currency.csv",
         "Necropolis": "Necropolis.currency.csv",
+        "Archnemesis": "Archnemesis.currency.csv",
+        "Expedition": "Expedition.currency.csv",
+        "Kalandra": "Kalandra.currency.csv",
+        "Sanctum": "Sanctum.currency.csv",
+        "Scourge": "Scourge.currency.csv",
+        "Sentinel": "Sentinel.currency.csv",
+        "Ultimatum": "Ultimatum.currency.csv",
     }
     all_data = []
     files_found = True
