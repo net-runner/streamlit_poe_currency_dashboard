@@ -12,11 +12,8 @@ st.set_page_config(layout="wide", page_title=t["app_title"])
 st.title(t["main_title"])
 st.markdown(t["description"])
 
-
 df_raw = dataLoader.load_data()
 league_info_df_global = dataLoader.load_league_info()
-
-
 
 df_raw = dataLoader.load_data()
 
@@ -106,7 +103,6 @@ else:
 
             with tabs[0]: # General Info
                 st.header(t["tab_general_info"])
-                st.subheader(t["general_summary_header"])
                 st.write(f"{t['total_entries']}: {len(df_raw)}")
                 st.write(f"{t['unique_leagues_count']}: {df_raw['league'].nunique()}")
                 st.write(f"{t['data_date_range']}: {df_raw['date'].min().strftime('%Y-%m-%d')} {t['to']} {df_raw['date'].max().strftime('%Y-%m-%d')}")
