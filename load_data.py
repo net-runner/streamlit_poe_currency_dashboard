@@ -7,7 +7,7 @@ import numpy as np
 # --- League Information ---
 @st.cache_data
 def load_league_info():
-    df = pd.read_csv('LeagueData.csv')
+    df = pd.read_csv('./data/LeagueData.csv')
     df['Release Date'] = pd.to_datetime(df['Release Date'])
     df['End Date'] = pd.to_datetime(df['End Date'])
     df['league'] = df['Challenge League'].str.replace(' league', '', regex=False)
@@ -35,7 +35,7 @@ def load_data():
     
     for league_name, file_name in league_files.items():
         try:
-            df = pd.read_csv(file_name, sep=None, engine='python', header=0)
+            df = pd.read_csv(f"./data/{league_name}.currency.csv", sep=None, engine='python', header=0)
             
             if df.empty:
                 st.sidebar.warning(f"File '{file_name}' is empty.")
