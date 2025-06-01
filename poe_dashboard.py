@@ -5,6 +5,11 @@ import plotly.graph_objects as go
 import numpy as np
 import load_data as dataLoader
 import translations
+from tabs.general_info_tab import show_general_info_tab
+from tabs.value_trends_tab import show_value_trends_tab
+from tabs.periodic_averages_tab import show_periodic_averages_tab
+from tabs.avg_value_tab import show_avg_value_tab
+from tabs.value_distribution_tab import show_value_distribution_tab
 
 t = translations.translations
 
@@ -102,173 +107,19 @@ else:
             tabs = st.tabs(tab_titles_pl)
 
             with tabs[0]: # General Info
-                st.header(t["tab_general_info"])
-                st.write(f"{t['total_entries']}: {len(df_raw)}")
-                st.write(f"{t['unique_leagues_count']}: {df_raw['league'].nunique()}")
-                st.write(f"{t['data_date_range']}: {df_raw['date'].min().strftime('%Y-%m-%d')} {t['to']} {df_raw['date'].max().strftime('%Y-%m-%d')}")
-                st.write(f"{t['unique_get_currencies_overall']}: {df_raw['get'].nunique()}")
-                st.write(f"{t['unique_pay_currencies_overall']}: {df_raw['pay'].nunique()}")
-
-                st.subheader(t["league_stats_header"])
-                league_summary_list = []
-                for league_name in league_info_df_global.index:
-                    league_data = df_raw[df_raw['league'] == league_name]
-                    info = league_info_df_global.loc[league_name]
-                    league_summary_list.append({
-                        t["col_league_name"]: league_name,
-                        t["col_release_date"]: info['Release Date'].strftime('%Y-%m-%d'),
-                        t["col_end_date"]: info['End Date'].strftime('%Y-%m-%d'),
-                        t["col_total_weeks"]: f"{info['Total Weeks']:.2f}",
-                        t["col_data_rows"]: len(league_data),
-                        t["col_unique_get_items"]: league_data['get'].nunique() if not league_data.empty else 0,
-                        t["col_unique_pay_items"]: league_data['pay'].nunique() if not league_data.empty else 0,
-                    })
-                if league_summary_list:
-                    league_summary_df = pd.DataFrame(league_summary_list)
-                    st.dataframe(league_summary_df, use_container_width=True)
-                else:
-                    st.info("Brak informacji o ligach do wyświetlenia.")
-
+                show_general_info_tab(df_raw,league_info_df_global,t)
 
             with tabs[1]: # Value Trends
-                st.header(t["value_trends_header"].format(selected_pay_currency=selected_pay_currency))
-                if not df_sidebar_filtered.empty:
-                    df_sidebar_filtered['legend_label'] = df_sidebar_filtered['get'] + " (" + df_sidebar_filtered['league'] + ")"
-                    fig_trend = px.line(
-                        df_sidebar_filtered.sort_values(by=['league', 'get', 'date']), 
-                        x='date', 
-                        y='value', 
-                        color='legend_label',
-                        labels={'value': t["value_in_pay_currency"].format(selected_pay_currency=selected_pay_currency), 'date': t["date_label"], 'legend_label': t["currency_league_label"]},
-                        title=t["value_trends_title"].format(selected_pay_currency=selected_pay_currency)
-                    )
-                    num_lines = len(df_sidebar_filtered['legend_label'].unique())
-                    dynamic_height = max(400, 70 * num_lines) 
-                    fig_trend.update_layout(
-                        height=min(dynamic_height, 1200), 
-                        legend_title_text=t["currency_league_label"]
-                    )
-                    st.plotly_chart(fig_trend, use_container_width=True)
-                else:
-                    st.warning(t["warning_no_data_value_trends"])
+                show_value_trends_tab(selected_pay_currency,df_sidebar_filtered,t)
 
             with tabs[2]: # Periodic Averages
-                st.header(t["periodic_averages_header"])
-                st.markdown(t["periodic_averages_markdown"].format(selected_pay_currency=selected_pay_currency))
-
-                if selected_get_currencies and selected_pay_currency:
-                    for currency_get_avg in selected_get_currencies:
-                        data_for_avg = df_sidebar_filtered[df_sidebar_filtered['get'] == currency_get_avg]
-                        if not data_for_avg.empty:
-                            st.subheader(t["averages_for_currency"].format(currency_get=currency_get_avg))
-                            
-                            avg_col1, avg_col2 = st.columns(2)
-                            
-                            with avg_col1:
-                                weekly_avg_dfs = []
-                                for league_name, group in data_for_avg.groupby('league'):
-                                    group_copy = group.set_index('date').copy()
-                                    weekly_mean = group_copy['value'].resample('W').mean().reset_index()
-                                    weekly_mean['league'] = league_name
-                                    weekly_avg_dfs.append(weekly_mean)
-                                
-                                if weekly_avg_dfs:
-                                    weekly_avg_df = pd.concat(weekly_avg_dfs)
-                                    fig_weekly = px.line(weekly_avg_df, x='date', y='value', color='league',
-                                                         title=t["weekly_averages_title"].format(currency_get=currency_get_avg),
-                                                         labels={'value': t["average_value_label"], 'date': t["week_label"], 'league': t["league_label"]})
-                                    st.plotly_chart(fig_weekly, use_container_width=True)
-                                else:
-                                    st.caption(f"Brak danych tygodniowych dla {currency_get_avg}")
-
-                            with avg_col2:
-                                monthly_avg_dfs = []
-                                for league_name, group in data_for_avg.groupby('league'):
-                                    group_copy = group.set_index('date').copy()
-                                    monthly_mean = group_copy['value'].resample('M').mean().reset_index() # 'M' is deprecated, use 'ME'
-                                    monthly_mean['league'] = league_name
-                                    monthly_avg_dfs.append(monthly_mean)
-
-                                if monthly_avg_dfs:
-                                    monthly_avg_df = pd.concat(monthly_avg_dfs)
-                                    fig_monthly = px.line(monthly_avg_df, x='date', y='value', color='league',
-                                                          title=t["monthly_averages_title"].format(currency_get=currency_get_avg),
-                                                          labels={'value': t["average_value_label"], 'date': t["month_label"], 'league': t["league_label"]})
-                                    st.plotly_chart(fig_monthly, use_container_width=True)
-                                else:
-                                    st.caption(f"Brak danych miesięcznych dla {currency_get_avg}")
-                        else:
-                            st.warning(t["warning_no_data_for_avg_calc"].format(currency_get=currency_get_avg))
-                else:
-                    st.info(t["info_select_currencies_for_averages"])
-
+                show_periodic_averages_tab(selected_get_currencies,selected_pay_currency,t,df_sidebar_filtered)
 
             with tabs[3]: # Avg Value Comparison
-                st.header(t["avg_value_comparison_header"])
-                avg_val_get_select_options = common_get_currencies if common_get_currencies else []
-                default_avg_get_index = 0
-                if default_gets and default_gets[0] in avg_val_get_select_options:
-                    default_avg_get_index = avg_val_get_select_options.index(default_gets[0])
-                
-                avg_val_get_select = st.selectbox(
-                    t["select_get_for_avg_comparison"], 
-                    avg_val_get_select_options, 
-                    index=default_avg_get_index, 
-                    key='avg_get_select'
-                )
-
-                if avg_val_get_select and selected_pay_currency:
-                    avg_df_source = df_league_pay_date_filtered[
-                        (df_league_pay_date_filtered['get'] == avg_val_get_select)
-                    ]
-                    if not avg_df_source.empty:
-                        avg_value_by_league = avg_df_source.groupby('league')['value'].mean().reset_index().sort_values(by='value', ascending=False)
-                        fig_bar_avg = px.bar(
-                            avg_value_by_league,
-                            x='league',
-                            y='value',
-                            color='league',
-                            labels={'value': t["avg_value_in_pay_currency"].format(selected_pay_currency=selected_pay_currency), 'league': t["league_label"]},
-                            title=t["avg_value_of_one_get_title"].format(avg_val_get_select=avg_val_get_select, selected_pay_currency=selected_pay_currency)
-                        )
-                        st.plotly_chart(fig_bar_avg, use_container_width=True)
-                    else:
-                        st.warning(t["warning_no_data_to_compare"].format(avg_val_get_select=avg_val_get_select, selected_pay_currency=selected_pay_currency))
-                else:
-                    st.info(t["info_select_get_pay_for_avg_comp"])
+                show_avg_value_tab(selected_pay_currency,common_get_currencies,df_league_pay_date_filtered,t,default_gets)
             
             with tabs[4]: # Value Distribution
-                st.header(t["value_distribution_header"])
-                if not df_sidebar_filtered.empty:
-                    dist_get_choice_options = selected_get_currencies if selected_get_currencies else []
-                    dist_get_choice = st.selectbox(
-                        t["select_get_for_distribution"], 
-                        dist_get_choice_options, 
-                        key='dist_get_choice',
-                        index = 0 if dist_get_choice_options else -1
-                    )
-                    if dist_get_choice:
-                        dist_df = df_sidebar_filtered[df_sidebar_filtered['get'] == dist_get_choice]
-                        if not dist_df.empty:
-                            st.subheader(t["distribution_of_get_value_subheader"].format(dist_get_choice=dist_get_choice, selected_pay_currency=selected_pay_currency))
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                fig_box = px.box(dist_df, x='league', y='value', color='league', title=t["box_plot_by_league_title"],
-                                                 labels={'value': t["value_in_pay_currency"].format(selected_pay_currency=selected_pay_currency), 'league': t["league_label"]})
-                                st.plotly_chart(fig_box, use_container_width=True)
-                            with col2:
-                                fig_hist = px.histogram(dist_df, x='value', color='league', marginal="rug", barmode='overlay', opacity=0.7, title=t["histogram_by_league_title"],
-                                                        labels={'value': t["value_in_pay_currency"].format(selected_pay_currency=selected_pay_currency), 'league': t["league_label"]})
-                                fig_hist.update_layout(bargap=0.1)
-                                st.plotly_chart(fig_hist, use_container_width=True)
-                        else:
-                             st.warning(t["warning_no_distribution_data"].format(dist_get_choice=dist_get_choice))
-                    elif selected_get_currencies:
-                         st.info(t["info_select_get_for_distribution_plot"])
-                    else:
-                        st.info(t["info_no_get_selected_for_distribution"])
-                else:
-                    st.info(t["info_ensure_get_pay_sidebar_distribution"])
+                show_value_distribution_tab(df_sidebar_filtered,selected_get_currencies,t,selected_pay_currency)
 
             with tabs[5]: # Currency Profile (Radar)
                 st.header(t["currency_profile_radar_header"])
