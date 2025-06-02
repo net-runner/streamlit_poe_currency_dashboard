@@ -6,18 +6,38 @@ import plotly.express as px
 def show_general_info_tab(df_raw, league_info_df_global, t):
 
     st.header(t["tab_general_info"])
-    # Basic info
-    st.write(f"{t['total_entries']}: {len(df_raw)}")
-    st.write(f"{t['unique_leagues_count']}: {df_raw['league'].nunique()}")
     st.write(
         f"{t['data_date_range']}: {df_raw['date'].min().strftime('%Y-%m-%d')} {t['to']} {df_raw['date'].max().strftime('%Y-%m-%d')}"
     )
-    st.write(f"{t['unique_get_currencies_overall']}: {df_raw['get'].nunique()}")
-    st.write(f"{t['unique_pay_currencies_overall']}: {df_raw['pay'].nunique()}")
-
-    st.subheader(t["league_stats_header"])
-
     league_summary_list = []
+    
+    
+    col_genMetric1, col_genMetric2 = st.columns(2)
+    
+    with col_genMetric1:
+        
+        st.metric(
+            label=t['total_entries'],
+            value=len(df_raw),
+        )
+        
+        st.metric(
+            label=t['unique_get_currencies_overall'],
+            value=df_raw['get'].nunique(),
+        )
+
+    with col_genMetric2:
+        
+        st.metric(
+            label=t['unique_leagues_count'],
+            value=df_raw['league'].nunique(),
+        )
+        
+        st.metric(
+            label=t['unique_pay_currencies_overall'],
+            value=df_raw['pay'].nunique(),
+        )
+    
     
     # Track the newest league's info to use for delta calculations
     newest_league_name = None
