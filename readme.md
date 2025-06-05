@@ -1,7 +1,3 @@
-No problem, I'll adjust the README to reflect that project structure and simplify the setup!
-
----
-
 # Path of Exile I currency dashboard
 
 Streamlit dashboard with currency data from PoE challenge leagues (Ultimatum-Necropolis).
