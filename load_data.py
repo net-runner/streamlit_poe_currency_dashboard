@@ -18,6 +18,7 @@ def load_league_info():
 @st.cache_data
 def load_data():
     league_files = {
+        "Settlers": "Settlers.currency.csv",
         "Ancestor": "Ancestor.currency.csv",
         "Crucible": "Crucible.currency.csv",
         "Affliction": "Affliction.currency.csv",

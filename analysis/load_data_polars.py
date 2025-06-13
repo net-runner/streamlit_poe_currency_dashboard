@@ -95,6 +95,7 @@ def load_data_pl():
         polars.DataFrame: A combined DataFrame containing the loaded currency data.
     """
     league_files = {
+        "Settlers": "Settlers.currency.csv",
         "Necropolis": "Necropolis.currency.csv",
         "Affliction": "Affliction.currency.csv",
         "Ancestor": "Ancestor.currency.csv",
