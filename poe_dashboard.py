@@ -18,9 +18,36 @@ from tabs.price_trajectories_tab import show_price_trajectories_tab
 from tabs.volatility_trends_tab import show_volatility_trends_tab
 from tabs.correlation_matrix_tab import show_correlation_matrix_tab
 
-t = translations.translations
+
+if 'language' not in st.session_state:
+    st.session_state.language = 'en' 
+
+if st.session_state.language == 'en':
+    t = translations.translations_en
+else:
+    t = translations.translations_pl
+
 
 st.set_page_config(layout="wide", page_title=t["app_title"])
+
+st.sidebar.header(t["language_selection_header"])
+selected_language_option = st.sidebar.selectbox(
+    t["select_language"],
+    options=['English', 'Polski'],
+    index=0 if st.session_state.language == 'en' else 1
+)
+
+if selected_language_option == 'English':
+    st.session_state.language = 'en'
+elif selected_language_option == 'Polski':
+    st.session_state.language = 'pl'
+
+
+if st.session_state.language == 'en':
+    t = translations.translations_en
+else:
+    t = translations.translations_pl
+
 st.title(t["main_title"])
 st.markdown(t["description"])
 

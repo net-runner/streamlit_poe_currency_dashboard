@@ -23,6 +23,7 @@ def load_data():
         "Crucible": "Crucible.currency.csv",
         "Affliction": "Affliction.currency.csv",
         "Necropolis": "Necropolis.currency.csv",
+        "Archnemesis": "Archnemesis.currency.csv",
         "Expedition": "Expedition.currency.csv",
         "Kalandra": "Kalandra.currency.csv",
         "Sanctum": "Sanctum.currency.csv",
