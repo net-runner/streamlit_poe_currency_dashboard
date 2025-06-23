@@ -177,3 +177,33 @@ else:
             st.error(t["error_date_range"])
     else:
         st.warning(t["warning_no_data_for_leagues"])
+
+st.markdown(
+    """
+    <style>
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+        font-size: 14px;
+    }
+    .footer p {
+        color: inherit;
+    }
+    .footer img {
+        vertical-align: middle; /* Aligns the image with the text */
+        margin-left: 5px; /* Adds a little space between text and image */
+    }
+    .footer a {
+        margin-left: 5px;
+    }
+    </style>
+    <div class="footer">
+        <p>Made with <img src="https://i.redd.it/jelw95fth1691.png" alt="exalt" width="20" height="20"> by<a href="https://www.github.com/net-runner" target="_blank">@net-runner</a></p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
