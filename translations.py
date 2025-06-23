@@ -124,6 +124,7 @@ translations_en = {
     "price_trajectories_header": "📈 Price Trajectories (Days from League Start)",
     "price_trajectories_markdown": "Comparison of selected 'Currency Received' values against **{selected_pay_currency}** based on days from league start.",
     "days_since_league_start_label": "Days Since League Start",
+    "days_since_league_start_slider_label": "League days",
     "price_trajectories_vs_pay_currency_title": "Price Trajectories vs. {selected_pay_currency}",
     "warning_no_data_price_trajectories": "No data for price trajectories. Ensure 'Release Date' is available for selected leagues and data exists for the filters.",
 
@@ -272,6 +273,7 @@ Użyj paska bocznego, aby dodatkowo odfiltrować dane.""",
     "price_trajectories_header": "📈 Trajektorie cenowe (dni od startu ligi)",
     "price_trajectories_markdown": "Porównanie wartości wybranych walut 'Otrzymujesz' względem **{selected_pay_currency}** na podstawie dni od rozpoczęcia ligi.",
     "days_since_league_start_label": "Dni od startu ligi",
+    "days_since_league_start_slider_label": "Dni ligi",
     "price_trajectories_vs_pay_currency_title": "Trajektorie cenowe vs. {selected_pay_currency}",
     "warning_no_data_price_trajectories": "Brak danych dla trajektorii cenowych. Upewnij się, że 'Data Wydania' jest dostępna dla wybranych lig i że istnieją dane dla filtrów.",
 
