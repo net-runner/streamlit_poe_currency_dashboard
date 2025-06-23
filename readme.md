@@ -1,6 +1,8 @@
+![dashboard](shots/dashboard.png)
+
 # Path of Exile I currency dashboard
 
-Streamlit dashboard with currency data from PoE challenge leagues (Ultimatum-Necropolis).
+Streamlit dashboard with currency data from PoE challenge leagues.
 
 ---
 
